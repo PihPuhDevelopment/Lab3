@@ -1,8 +1,37 @@
 import base_client
 import json
 import get_user_id
-import math
+import sys
 from _datetime import datetime
+
+def calculate_age(born):
+    today = datetime.utcnow()
+    return today.year - born.year -((today.month, today.day) < (born.month, born.day))
+
+def draw_distribution(array):
+    min = array[0]
+    max = array[0]
+    for i in range(1, len(array)):
+        if array[i] < min:
+            min = array[i]
+        if array[i] > max:
+            max = array[i]
+    #relation = 20/max;
+    #for i in range(0, len(array)):
+        #array[i] *= relation
+        #array[i] = round(array[i], 0)
+    distribution = {}
+    for i in range(min, max + 1):
+        distribution[i] = 0
+    for i in range(0, len(array)):
+        distribution[array[i]] += 1
+
+    for i in distribution:
+        sys.stdout.write(str(i))
+        sys.stdout.write(" ")
+        for i in range(0, distribution[i]):
+            sys.stdout.write("#")
+        print('');
 
 class GetFriends(base_client.BaseClient):
     BASE_URL = "https://api.vk.com/method/"
@@ -37,15 +66,18 @@ c.user_id = uid
 friends = c.execute()
 print(friends)
 
-datetimes = []
+ages = []
 
 for f in friends["response"]:
     if("bdate" in f):
         if(len(f["bdate"]) > 5):
-            datetimes.append(math.floor((datetime.utcnow() - datetime.strptime(f["bdate"], "%d.%m.%Y")).days / 365))
+            ages.append(calculate_age(datetime.strptime(f["bdate"], "%d.%m.%Y")))
+
+print(ages)
+draw_distribution(ages)
 
 
-print(datetimes)
+
 
 
 
