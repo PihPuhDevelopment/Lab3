@@ -2,13 +2,15 @@ import base_client
 import json
 import get_user_id
 import sys
+import matplotlib.pyplot as plt
+import numpy as np
 from _datetime import datetime
 
 def calculate_age(born):
     today = datetime.utcnow()
     return today.year - born.year -((today.month, today.day) < (born.month, born.day))
 
-def draw_distribution(array):
+def draw_distribution(array, draw_hist):
     #find min and max in ages to determine range of distribution
     min = array[0]
     max = array[0]
@@ -32,16 +34,24 @@ def draw_distribution(array):
     #x/dmax, where x is length of the highest column
     relation = 80/dmax;
     #normalize distribution by relation
+    x = []
+    y = []
     for i in distribution:
         distribution[i] *= relation
         distribution[i] = int(round(distribution[i], 0))
-    #print distribution
-    for i in distribution:
-        sys.stdout.write(str(i))
-        sys.stdout.write(" ")
-        for i in range(0, distribution[i]):
-            sys.stdout.write("#")
-        print('');
+        x.append(i)
+        y.append(distribution[i])
+    if(draw_hist):
+        plt.hist([array], range(min, max + 1))
+        plt.show()
+    else:
+        #print distribution
+        for i in distribution:
+            sys.stdout.write(str(i))
+            sys.stdout.write(" ")
+            for i in range(0, distribution[i]):
+                sys.stdout.write("#")
+            print('');
 
 class GetFriends(base_client.BaseClient):
     BASE_URL = "https://api.vk.com/method/"
@@ -84,7 +94,10 @@ for f in friends["response"]:
             ages.append(calculate_age(datetime.strptime(f["bdate"], "%d.%m.%Y")))
 
 print(ages)
-draw_distribution(ages)
+draw_distribution(ages, True)
+
+
+plt.show()
 
 
 
