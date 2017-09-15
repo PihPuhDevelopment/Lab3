@@ -9,6 +9,7 @@ def calculate_age(born):
     return today.year - born.year -((today.month, today.day) < (born.month, born.day))
 
 def draw_distribution(array):
+    #find min and max in ages to determine range of distribution
     min = array[0]
     max = array[0]
     for i in range(1, len(array)):
@@ -16,16 +17,25 @@ def draw_distribution(array):
             min = array[i]
         if array[i] > max:
             max = array[i]
-    #relation = 20/max;
-    #for i in range(0, len(array)):
-        #array[i] *= relation
-        #array[i] = round(array[i], 0)
+    #initialize and count number of people in each age
     distribution = {}
     for i in range(min, max + 1):
         distribution[i] = 0
     for i in range(0, len(array)):
+        #key in dict is age
         distribution[array[i]] += 1
-
+    #find max count in distribution
+    dmax = 0
+    for i in distribution:
+        if distribution[i] > dmax:
+            dmax = distribution[i]
+    #x/dmax, where x is length of the highest column
+    relation = 80/dmax;
+    #normalize distribution by relation
+    for i in distribution:
+        distribution[i] *= relation
+        distribution[i] = int(round(distribution[i], 0))
+    #print distribution
     for i in distribution:
         sys.stdout.write(str(i))
         sys.stdout.write(" ")
